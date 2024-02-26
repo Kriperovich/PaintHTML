@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Простая рисовалка с заливкой и сохранением в PNG</title>
+<title>Простая рисовалка с выбором цвета, размером кисти и сохранением в PNG</title>
+<link rel="icon" href="favicon.png" type="image/x-icon">
 <style>
     #container {
         display: flex;
@@ -20,7 +21,7 @@
         margin-top: 10px;
     }
 
-    #saveBtn, #fillBtn {
+    #saveBtn {
         margin-top: 10px;
     }
 
@@ -37,7 +38,6 @@
     <input type="range" id="brushSize" min="1" max="50" value="5">
     <input type="color" id="colorPicker" value="#000000">
     <button id="saveBtn">Сохранить как PNG</button>
-    <button id="fillBtn">Заливка</button>
 </div>
 <a id="youtubeBtn" href="https://www.youtube.com/">
     <img src="youtube_icon.png" alt="YouTube" width="50" height="50">
@@ -80,37 +80,6 @@
         }
     }
 
-    function fill(x, y, fillColor) {
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const targetColor = ctx.getImageData(x, y, 1, 1).data;
-        const stack = [[x, y]];
-
-        while (stack.length) {
-            const [currentX, currentY] = stack.pop();
-
-            if (currentX < 0 || currentX >= canvas.width || currentY < 0 || currentY >= canvas.height) {
-                continue;
-            }
-
-            const index = (currentY * canvas.width + currentX) * 4;
-            const pixelColor = imageData.data.slice(index, index + 4);
-
-            if (pixelColor[0] === targetColor[0] && pixelColor[1] === targetColor[1] && pixelColor[2] === targetColor[2]) {
-                imageData.data[index] = fillColor[0];
-                imageData.data[index + 1] = fillColor[1];
-                imageData.data[index + 2] = fillColor[2];
-                imageData.data[index + 3] = 255;
-
-                stack.push([currentX + 1, currentY]);
-                stack.push([currentX - 1, currentY]);
-                stack.push([currentX, currentY + 1]);
-                stack.push([currentX, currentY - 1]);
-            }
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-    }
-
     canvas.addEventListener('touchstart', startPosition);
     canvas.addEventListener('touchend', endPosition);
     canvas.addEventListener('touchmove', draw);
@@ -136,14 +105,8 @@
         a.click();
         document.body.removeChild(a);
     });
-
-    document.getElementById('fillBtn').addEventListener('click', function() {
-        const x = Math.floor(Math.random() * canvas.width);
-        const y = Math.floor(Math.random() * canvas.height);
-        const fillColor = color.substring(1).match(/.{2}/g).map(byte => parseInt(byte, 16));
-        fill(x, y, fillColor);
-    });
 </script>
 </body>
 </html>
+
 
